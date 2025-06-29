@@ -20,6 +20,4 @@ Verified certificate of completion from Stanford:
 - Object-Oriented Design
 - CLI (Command Line Interface)
 
-## 🚀 How to Run
-```bash
-python chess.py
+
