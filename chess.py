@@ -265,7 +265,10 @@ class Game:
             if self.turn == WHITE:
                 legal = self.board.legal_moves(WHITE)
                 while True:
-                    move_str = input("Your move (e.g., E2 E4, or Q to quit): ")
+                    try:
+                        move_str = input("Your move (e.g., E2 E4, or Q to quit): ")
+                    except EOFError:
+                        move_str = 'Q'
                     if move_str.strip().upper() in ('Q', 'QUIT'):
                         print("Goodbye!")
                         return
@@ -287,6 +290,28 @@ class Game:
             self.turn = opponent(self.turn)
 
 
+def main_menu():
+    while True:
+        print()
+        print('=' * 34)
+        print('        ♞  TERMINAL CHESS')
+        print('=' * 34)
+        print('  1. Play against the computer')
+        print('  2. Chess Academy (openings, traps, puzzles)')
+        print('  Q. Quit')
+        try:
+            choice = input('> ').strip().lower()
+        except EOFError:
+            return
+        if choice == '1':
+            Game().play()
+        elif choice == '2':
+            import academy  # imported lazily so chess.py also works on its own
+            academy.academy()
+        elif choice in ('q', 'quit'):
+            print('Goodbye!')
+            return
+
+
 if __name__ == '__main__':
-    game = Game()
-    game.play()
+    main_menu()

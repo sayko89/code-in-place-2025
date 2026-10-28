@@ -1,4 +1,7 @@
-"""Render an animated demo of the game (Scholar's Mate) to assets/demo.gif.
+"""Render the animated GIFs shown in the README.
+
+  assets/demo.gif      Scholar's Mate, played like a real game
+  assets/academy.gif   Légal's Mate, as shown in the Chess Academy (with notes)
 
 Every move is validated with the game's own engine in chess.py, so the
 animation only shows moves the program itself accepts.
@@ -13,14 +16,16 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import chess  # noqa: E402
+from academy import square  # noqa: E402
+from lessons import TRAPS  # noqa: E402
 
 # --- Look & feel -------------------------------------------------------------
 SQ = 64                       # square size in px
 PAD = 36                      # frame around the board (for coordinates)
 HEADER = 48                   # title bar height
-FOOTER = 52                   # status bar height
+FOOTER = 52                   # status bar height (+ NOTE_H when notes are shown)
+NOTE_H = 26
 W = PAD * 2 + SQ * 8
-H = HEADER + PAD * 2 + SQ * 8 + FOOTER
 
 BG = (22, 27, 34)             # GitHub dark
 LIGHT = (240, 217, 181)
@@ -38,19 +43,13 @@ TITLE_FONT = ImageFont.truetype(FONT_DIR + 'DejaVuSans-Bold.ttf', 22)
 SUB_FONT = ImageFont.truetype(FONT_DIR + 'DejaVuSans.ttf', 13)
 COORD_FONT = ImageFont.truetype(FONT_DIR + 'DejaVuSans-Bold.ttf', 13)
 STATUS_FONT = ImageFont.truetype(FONT_DIR + 'DejaVuSansMono-Bold.ttf', 17)
+NOTE_FONT = ImageFont.truetype(FONT_DIR + 'DejaVuSans.ttf', 14)
 
 # Solid glyphs are used as the body, outline glyphs as the edge.
 SOLID = {chess.King: '♚', chess.Queen: '♛', chess.Rook: '♜',
          chess.Bishop: '♝', chess.Knight: '♞', chess.Pawn: '♟'}
 OUTLINE = {chess.King: '♔', chess.Queen: '♕', chess.Rook: '♖',
            chess.Bishop: '♗', chess.Knight: '♘', chess.Pawn: '♙'}
-
-MOVES = [('E2', 'E4'), ('E7', 'E5'),
-         ('F1', 'C4'), ('B8', 'C6'),
-         ('D1', 'H5'), ('G8', 'F6'),
-         ('H5', 'F7')]
-SAN = ['e4', 'e5', 'Bc4', 'Nc6', 'Qh5', 'Nf6??', 'Qxf7#']
-
 
 def square_xy(row, col):
     return PAD + col * SQ, HEADER + PAD + row * SQ
@@ -75,15 +74,17 @@ def draw_piece(img, piece, x, y):
 
 
 def render(board, last=None, check_sq=None, status='', status_color=TEXT,
-           moving=None, banner=None):
-    """moving = (piece, from_rc, to_rc, t) draws a piece mid-flight."""
+           moving=None, banner=None, title='Terminal Chess',
+           subtitle='Python · OOP · Code in Place 2025', note=None):
+    """moving = (piece, from_rc, to_rc, t) draws a piece mid-flight.
+    note=None hides the note line; note='' keeps the space but leaves it empty."""
+    H = HEADER + PAD * 2 + SQ * 8 + FOOTER + (NOTE_H if note is not None else 0)
     img = Image.new('RGBA', (W, H), BG + (255,))
     d = ImageDraw.Draw(img)
 
     # Header
-    d.text((PAD, 14), '♞  Terminal Chess', font=TITLE_FONT, fill=TEXT)
-    d.text((W - PAD, 22), 'Python · OOP · Code in Place 2025',
-           font=SUB_FONT, fill=MUTED, anchor='ra')
+    d.text((PAD, 14), '♞  ' + title, font=TITLE_FONT, fill=TEXT)
+    d.text((W - PAD, 22), subtitle, font=SUB_FONT, fill=MUTED, anchor='ra')
 
     # Board shadow + frame
     bx, by = PAD, HEADER + PAD
@@ -137,6 +138,8 @@ def render(board, last=None, check_sq=None, status='', status_color=TEXT,
     sy = HEADER + PAD * 2 + SQ * 8 + 4
     d.text((PAD, sy + 10), '$', font=STATUS_FONT, fill=ACCENT)
     d.text((PAD + 20, sy + 10), status, font=STATUS_FONT, fill=status_color)
+    if note:
+        d.text((PAD + 20, sy + 40), note, font=NOTE_FONT, fill=MUTED)
 
     # Final banner
     if banner:
@@ -155,57 +158,73 @@ def render(board, last=None, check_sq=None, status='', status_color=TEXT,
     return img.convert('RGB')
 
 
-def main():
-    game = chess.Game()
-    board = game.board
+def make_gif(lesson, out, labels, intro, banner, title, subtitle, notes):
+    """Animate a lesson, validating every move with the engine."""
+    board = chess.Board()
     frames, durations = [], []
+    note_kw = {'note': ''} if notes else {}
+    style = dict(title=title, subtitle=subtitle)
 
     def add(frame, ms):
         frames.append(frame)
         durations.append(ms)
 
-    add(render(board, status='python3 chess.py'), 1200)
+    add(render(board, status=intro, **style, **note_kw), 1200)
 
     last = None
     turn = chess.WHITE
-    for n, ((src, dst), san) in enumerate(zip(MOVES, SAN)):
-        s, e = game.parse_input(f'{src} {dst}')
-        assert (s, e) in board.legal_moves(turn), f'illegal move {src} {dst}'
+    for n, (coord, san, comment) in enumerate(lesson['moves']):
+        s, e = square(coord[:2]), square(coord[2:])
+        assert (s, e) in board.legal_moves(turn), f'illegal move {san}'
         piece = board.get_spot(*s).piece
-        who = 'White' if turn == chess.WHITE else 'Computer'
-        prompt = f'{n // 2 + 1}. {"" if turn == chess.WHITE else "... "}{san}'
-        label = f'{who}: {src} {dst}   ({prompt})'
+        number = f'{n // 2 + 1}.' if n % 2 == 0 else f'{n // 2 + 1}...'
+        label = f'{labels[n % 2]}{coord[:2].upper()} {coord[2:].upper()}   ({number} {san})'
+        kw = dict(style, note=comment) if notes else style
 
         steps = 8
         for i in range(1, steps + 1):
-            add(render(board, last=last, status=label, moving=(piece, s, e, i / steps)), 40)
+            add(render(board, last=last, status=label, moving=(piece, s, e, i / steps), **kw), 40)
         board.move_piece(board.get_spot(*s), board.get_spot(*e))
         last = {s, e}
         turn = chess.opponent(turn)
 
-        check_sq = None
-        status, color = label, TEXT
+        check_sq, color = None, TEXT
         if board.in_check(turn):
             k = board.find_king(turn)
-            check_sq = (k.x, k.y)
-            status, color = label + '   Check!', CHECK
-        add(render(board, last=last, check_sq=check_sq, status=status, status_color=color), 650)
+            check_sq, color = (k.x, k.y), CHECK
+        hold = 1700 if notes and comment else 650
+        add(render(board, last=last, check_sq=check_sq, status=label, status_color=color, **kw), hold)
 
-    # Engine confirms: Black is in check with no legal moves.
-    assert board.in_check(chess.BLACK) and not board.legal_moves(chess.BLACK)
-    k = board.find_king(chess.BLACK)
-    final = 'Checkmate! Black is mated — White wins.'
-    add(render(board, last=last, check_sq=(k.x, k.y), status=final, status_color=CHECK), 900)
+    # The engine confirms the final position is checkmate.
+    assert board.in_check(turn) and not board.legal_moves(turn)
+    k = board.find_king(turn)
+    loser = 'Black' if turn == chess.BLACK else 'White'
+    final = f'Checkmate! {loser} is mated.'
     add(render(board, last=last, check_sq=(k.x, k.y), status=final, status_color=CHECK,
-               banner=('CHECKMATE', "Scholar's Mate · 4. Qxf7#")), 3200)
+               **style, **note_kw), 900)
+    add(render(board, last=last, check_sq=(k.x, k.y), status=final, status_color=CHECK,
+               banner=banner, **style, **note_kw), 3200)
 
-    out = os.path.join(ROOT, 'assets', 'demo.gif')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     pal = [f.quantize(colors=128, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
            for f in frames]
     pal[0].save(out, save_all=True, append_images=pal[1:], duration=durations,
                 loop=0, optimize=True, disposal=1)
     print(f'wrote {out} ({len(frames)} frames, {os.path.getsize(out) // 1024} KB)')
+
+
+def main():
+    traps = {t['name']: t for t in TRAPS}
+    make_gif(traps["Scholar's Mate"], os.path.join(ROOT, 'assets', 'demo.gif'),
+             labels=('White: ', 'Computer: '), intro='python3 chess.py',
+             banner=('CHECKMATE', "Scholar's Mate \u00b7 4. Qxf7#"),
+             title='Terminal Chess', subtitle='Python \u00b7 OOP \u00b7 Code in Place 2025',
+             notes=False)
+    make_gif(traps["L\u00e9gal's Mate"], os.path.join(ROOT, 'assets', 'academy.gif'),
+             labels=('', ''), intro='Academy \u203a Traps \u203a L\u00e9gal\'s Mate',
+             banner=('CHECKMATE', "L\u00e9gal's Mate \u00b7 7. Nd5#"),
+             title='Chess Academy', subtitle='Trap \u00b7 L\u00e9gal\'s Mate (1750)',
+             notes=True)
 
 
 if __name__ == '__main__':
