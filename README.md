@@ -1,16 +1,43 @@
-# ♟️ Terminal Chess — Code in Place 2025 Final Project
+<div align="center">
 
-A terminal-based chess game written in Python, built as my final project for
-[Stanford's Code in Place 2025](https://codeinplace.stanford.edu/) (based on CS106A).
-You play White against a computer opponent that picks a random legal move.
+# ♞ Terminal Chess
 
-🎓 **Verified certificate:** [View on Code in Place](https://codeinplace.stanford.edu/cip5/certificate/pj0y0n)
+**A chess game in the terminal, written in pure Python — my final project for Stanford's Code in Place 2025.**
+
+[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![No dependencies](https://img.shields.io/badge/dependencies-none-2ea44f?style=for-the-badge)](#-quick-start)
+[![Code in Place](https://img.shields.io/badge/Stanford-Code_in_Place_2025-8C1515?style=for-the-badge)](https://codeinplace.stanford.edu/)
+
+<img src="assets/demo.gif" alt="Animated demo: Scholar's Mate ending in checkmate" width="460">
+
+<sub>Every move in this animation is validated by the game's own engine — see <a href="tools/make_demo_gif.py"><code>tools/make_demo_gif.py</code></a>.</sub>
+
+</div>
 
 ---
 
-## Demo
+## ✨ Features
 
+|   |   |
+|---|---|
+| ♟️ **Full piece movement** | All six piece types, including the pawn's double step from its starting rank |
+| 🚧 **Path checking** | Rooks, bishops and queens can't jump over other pieces |
+| 👑 **Check & checkmate** | The game announces check, detects checkmate and ends with a winner |
+| 🤝 **Stalemate** | No legal moves without being in check is correctly called a draw |
+| 📌 **Pins respected** | Any move that would leave your own king in check is rejected |
+| 🤖 **Computer opponent** | Plays Black by choosing a random legal move |
+
+## 🚀 Quick start
+
+```bash
+git clone https://github.com/sayko89/code-in-place-2025.git
+cd code-in-place-2025
+python3 chess.py
 ```
+
+Type moves as `<from> <to>` — for example `E2 E4`. Type `Q` to quit.
+
+```text
 8 r n b q k b n r
 7 p p p p p p p p
 6 . . . . . . . .
@@ -24,50 +51,56 @@ Turn: Black
 Computer played: G8 to F6
 ```
 
-Uppercase letters are White pieces, lowercase are Black (`K` king, `Q` queen,
-`R` rook, `B` bishop, `N` knight, `P` pawn).
+<sub>Uppercase = White, lowercase = Black · <b>K</b> king · <b>Q</b> queen · <b>R</b> rook · <b>B</b> bishop · <b>N</b> knight · <b>P</b> pawn</sub>
 
-## How to run
+## 🧩 How it works
 
-Requires Python 3 — no external libraries.
-
-```bash
-git clone https://github.com/sayko89/code-in-place-2025.git
-cd code-in-place-2025
-python3 chess.py
+```mermaid
+classDiagram
+    direction LR
+    Game --> Board : owns
+    Board --> Spot : 8×8 grid
+    Spot --> Piece : holds 0..1
+    Piece <|-- King
+    Piece <|-- Queen
+    Piece <|-- Rook
+    Piece <|-- Bishop
+    Piece <|-- Knight
+    Piece <|-- Pawn
+    class Game {
+      parse_input()
+      check_game_over()
+      play()
+    }
+    class Board {
+      legal_moves(color)
+      in_check(color)
+      move_piece() / undo_move()
+    }
+    class Piece {
+      color
+      can_move(board, start, end)
+    }
 ```
 
-Enter moves as `<from> <to>`, e.g. `E2 E4`. Type `Q` to quit.
+Each piece only knows its own movement pattern (`can_move`). The `Board` turns those into **legal** moves by
+playing every candidate move, checking whether the mover's king is attacked, and undoing it. If a player has no
+legal moves, the game ends: **checkmate** when the king is in check, **stalemate** otherwise.
 
-## Features
-
-- Movement rules for all six piece types, including pawn double-step from the starting rank
-- Path checking so sliding pieces (rook, bishop, queen) can't jump over others
-- **Check, checkmate and stalemate detection** — moves that would leave your own king in check are rejected (including pinned pieces)
-- Human (White) vs. computer (Black), turn by turn
-- Input validation with a retry prompt on invalid moves
-- Board redrawn after every move
-
-## Design
-
-The code is organized around a small object-oriented model:
-
-| Class | Responsibility |
-|-------|----------------|
-| `Spot` | One square on the board and the piece on it |
-| `Piece` | Base class; each subclass (`King`, `Queen`, `Rook`, `Bishop`, `Knight`, `Pawn`) implements its own `can_move` |
-| `Board` | 8×8 grid, setup, path checking, legal move generation (each candidate move is played, checked for king safety, then undone) |
-| `Game` | Input parsing and the main game loop |
-
-## Limitations & next steps
-
-This is a learning project, so some rules aren't implemented yet:
+## 🗺️ Roadmap
 
 - [x] Check, checkmate and stalemate detection
 - [ ] Castling, en passant and pawn promotion
-- [ ] A smarter opponent (e.g. minimax with material evaluation instead of random moves)
+- [ ] A smarter opponent (minimax with material evaluation)
 - [ ] Unit tests for piece movement
 
-## Built with
+## 🎓 Certificate
 
-Python 3 · Object-oriented design · CLI
+Completed **Stanford's Code in Place 2025** (based on CS106A) —
+[verified certificate](https://codeinplace.stanford.edu/cip5/certificate/pj0y0n) · [PDF](assets/certificate.pdf)
+
+---
+
+<div align="center">
+<sub>Made with ♥ and Python by <a href="https://github.com/sayko89">Safiye Özkan</a></sub>
+</div>
