@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 import chess  # noqa: E402
-from academy import square  # noqa: E402
+from academy import coord_move  # noqa: E402
 from lessons import TRAPS  # noqa: E402
 
 # --- Look & feel -------------------------------------------------------------
@@ -174,7 +174,7 @@ def make_gif(lesson, out, labels, intro, banner, title, subtitle, notes):
     last = None
     turn = chess.WHITE
     for n, (coord, san, comment) in enumerate(lesson['moves']):
-        s, e = square(coord[:2]), square(coord[2:])
+        s, e, promo = coord_move(coord)
         assert (s, e) in board.legal_moves(turn), f'illegal move {san}'
         piece = board.get_spot(*s).piece
         number = f'{n // 2 + 1}.' if n % 2 == 0 else f'{n // 2 + 1}...'
@@ -184,7 +184,7 @@ def make_gif(lesson, out, labels, intro, banner, title, subtitle, notes):
         steps = 8
         for i in range(1, steps + 1):
             add(render(board, last=last, status=label, moving=(piece, s, e, i / steps), **kw), 40)
-        board.move_piece(board.get_spot(*s), board.get_spot(*e))
+        board.move_piece(board.get_spot(*s), board.get_spot(*e), promo)
         last = {s, e}
         turn = chess.opponent(turn)
 

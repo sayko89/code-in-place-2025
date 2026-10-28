@@ -9,7 +9,7 @@ import unittest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import chess  # noqa: E402
-from academy import board_from_fen, play_line, square  # noqa: E402
+from academy import board_from_fen, coord_move, play_line, square  # noqa: E402
 from lessons import OPENINGS, PUZZLES, TRAPS  # noqa: E402
 
 
@@ -38,9 +38,9 @@ class LessonTests(unittest.TestCase):
             with self.subTest(p['name']):
                 board = board_from_fen(p['fen'])
                 color = chess.WHITE if p['to_move'] == 'white' else chess.BLACK
-                src, dst = square(p['solution'][:2]), square(p['solution'][2:])
+                src, dst, promo = coord_move(p['solution'])
                 self.assertIn((src, dst), board.legal_moves(color))
-                board.move_piece(board.get_spot(*src), board.get_spot(*dst))
+                board.move_piece(board.get_spot(*src), board.get_spot(*dst), promo)
                 other = chess.opponent(color)
                 self.assertTrue(board.in_check(other))
                 if p['goal'] == 'mate':

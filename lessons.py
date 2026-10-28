@@ -1,6 +1,7 @@
 """Content for the Chess Academy: openings, traps, puzzles and tips.
 
-Moves are written as "<from><to>" (e.g. "e2e4") together with their standard
+Moves are written as "<from><to>" (e.g. "e2e4"; a fifth letter picks the promotion
+piece, e.g. "e7e8n"; castling is written as the king's move, e.g. "e1g1") together with their standard
 algebraic notation (SAN) and a short explanation. Every line here is checked
 against the game engine by `tests/test_lessons.py`.
 """
@@ -23,7 +24,9 @@ OPENINGS = [
             ('c2c3', 'c3', 'White prepares d4 to build a big pawn center.'),
             ('g8f6', 'Nf6', 'Black develops and counter-attacks e4.'),
             ('d2d3', 'd3', 'A solid modern choice: e4 is protected, the fight is slow.'),
-            ('d7d6', 'd6', 'Both sides are ready to castle. A classic, balanced position.'),
+            ('d7d6', 'd6', 'Both sides are ready to castle.'),
+            ('e1g1', 'O-O', 'White castles: the king is safe and the rook joins the game.'),
+            ('e8g8', 'O-O', 'Black castles too. A classic, balanced position.'),
         ],
     },
     {
@@ -37,7 +40,15 @@ OPENINGS = [
             ('f1b5', 'Bb5', 'The Spanish bishop attacks the knight that defends e5.'),
             ('a7a6', 'a6', 'The Morphy Defence: "Bishop, make up your mind!"'),
             ('b5a4', 'Ba4', 'White keeps the pressure instead of trading.'),
-            ('g8f6', 'Nf6', 'Black develops and hits e4. This is the main line.'),
+            ('g8f6', 'Nf6', 'Black develops and hits e4.'),
+            ('e1g1', 'O-O', 'White castles early — e4 is indirectly protected.'),
+            ('f8e7', 'Be7', 'The Closed Ruy Lopez.'),
+            ('f1e1', 'Re1', 'The rook defends e4 from behind.'),
+            ('b7b5', 'b5', 'Black finally chases the bishop away.'),
+            ('a4b3', 'Bb3', 'The bishop keeps aiming at f7.'),
+            ('d7d6', 'd6', 'Solid support for e5.'),
+            ('c2c3', 'c3', 'Preparing d4 and a retreat square for the bishop.'),
+            ('e8g8', 'O-O', 'Both kings are safe. One of the most studied positions in chess.'),
         ],
     },
     {
@@ -68,6 +79,8 @@ OPENINGS = [
             ('g8f6', 'Nf6', 'More pressure on e4.'),
             ('c1g5', 'Bg5', 'Pins the knight that attacks e4.'),
             ('f8e7', 'Be7', 'Black breaks the pin calmly. The Classical French.'),
+            ('e4e5', 'e5', 'White gains space and kicks the knight.'),
+            ('f6d7', 'Nfd7', 'The knight retreats and prepares ...c5 to hit the pawn chain.'),
         ],
     },
     {
@@ -95,7 +108,9 @@ OPENINGS = [
             ('b1c3', 'Nc3', 'More pressure on d5.'),
             ('g8f6', 'Nf6', 'Defends d5.'),
             ('c1g5', 'Bg5', "Pins the knight — the queen on d8 is behind it."),
-            ('f8e7', 'Be7', 'Breaks the pin. The Orthodox Defence.'),
+            ('f8e7', 'Be7', 'Breaks the pin.'),
+            ('e2e3', 'e3', 'Opens the way for the light-squared bishop.'),
+            ('e8g8', 'O-O', 'Black castles. The Orthodox Defence.'),
         ],
     },
     {
@@ -109,7 +124,11 @@ OPENINGS = [
             ('b1c3', 'Nc3', 'Supporting e4.'),
             ('f8g7', 'Bg7', 'The bishop aims down the long diagonal at the center.'),
             ('e2e4', 'e4', 'White builds a huge center.'),
-            ('d7d6', 'd6', 'Black prepares ...e5 to strike back. Sharp play ahead!'),
+            ('d7d6', 'd6', 'Black prepares ...e5 to strike back.'),
+            ('g1f3', 'Nf3', 'The Classical Variation.'),
+            ('e8g8', 'O-O', 'Black castles before opening the center.'),
+            ('f1e2', 'Be2', 'White prepares to castle as well.'),
+            ('e7e5', 'e5', 'The strike! Sharp play on opposite wings ahead.'),
         ],
     },
     {
@@ -242,6 +261,30 @@ TRAPS = [
             ('e8d8', 'Kxd8', 'Material count: Black is a whole knight up.'),
         ],
     },
+    {
+        'name': 'Fishing Pole Trap',
+        'summary': "Black offers a knight as bait. If White bites, the h-file opens straight to the castled king.",
+        'moves': [
+            ('e2e4', 'e4', ''),
+            ('e7e5', 'e5', ''),
+            ('g1f3', 'Nf3', ''),
+            ('b8c6', 'Nc6', ''),
+            ('f1b5', 'Bb5', 'The Ruy Lopez.'),
+            ('g8f6', 'Nf6', 'The Berlin Defence.'),
+            ('e1g1', 'O-O', 'White castles king side.'),
+            ('f6g4', 'Ng4?!', 'The fishing pole is cast...'),
+            ('h2h3', 'h3', 'Natural: kick the knight.'),
+            ('h7h5', 'h5!?', '...and the bait is offered.'),
+            ('h3g4', 'hxg4?', 'White takes the free knight.'),
+            ('h5g4', 'hxg4', 'The h-file is open and the rook on h8 joins the attack.'),
+            ('f3e1', 'Ne1??', 'The losing move. Nxe5 or d4 was needed.'),
+            ('d8h4', 'Qh4', 'The queen threatens Qh2#.'),
+            ('f2f3', 'f3', 'Making space for the king on f2...'),
+            ('g4g3', 'g3!', '...but the pawn takes that square away.'),
+            ('b5c6', 'Bxc6', 'Nothing helps any more.'),
+            ('h4h2', 'Qh2#', 'Checkmate. The g3 pawn protects the queen.'),
+        ],
+    },
 ]
 
 # ---------------------------------------------------------------------------
@@ -301,6 +344,28 @@ PUZZLES = [
         'san': 'Re8+',
         'hint': 'The king and queen stand on the same file.',
         'explanation': 'The rook checks the king; when it steps aside, the rook takes the queen on e1.',
+        'goal': 'check',
+    },
+    {
+        'name': 'En passant checkmate',
+        'theme': 'Special move — en passant',
+        'fen': '3bq3/4k3/8/2NpP3/8/8/8/3R1R1K w - d6',
+        'to_move': 'white',
+        'solution': 'e5d6',
+        'san': 'exd6#',
+        'hint': 'Black has just played ...d7-d5. Your e5 pawn can capture it as if it had moved one square.',
+        'explanation': 'En passant! The pawn lands on d6 with check, and the rook on d1 now protects it.',
+        'goal': 'mate',
+    },
+    {
+        'name': 'Underpromotion',
+        'theme': 'Special move — promotion',
+        'fen': '8/2q1P1k1/8/8/8/8/8/7K w - -',
+        'to_move': 'white',
+        'solution': 'e7e8n',
+        'san': 'e8=N+',
+        'hint': 'A queen is not always the best choice. Type the piece letter, e.g. E7 E8 N.',
+        'explanation': 'Promoting to a knight forks the king and the queen. After the king moves, Nxc7.',
         'goal': 'check',
     },
 ]

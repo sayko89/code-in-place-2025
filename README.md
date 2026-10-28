@@ -26,6 +26,9 @@
 | 👑 **Check & checkmate** | The game announces check, detects checkmate and ends with a winner |
 | 🤝 **Stalemate** | No legal moves without being in check is correctly called a draw |
 | 📌 **Pins respected** | Any move that would leave your own king in check is rejected |
+| 🏰 **Castling** | King and queen side, with every rule: no castling out of, through or into check |
+| 👻 **En passant** | Capture a pawn that just made a double step — only on the very next move |
+| 🔄 **Promotion** | Promote to a queen, rook, bishop or knight |
 | 🤖 **Computer opponent** | Plays Black by choosing a random legal move |
 | 🎓 **Chess Academy** | Openings, traps, puzzles and principles — see below |
 
@@ -38,7 +41,14 @@ python3 chess.py
 ```
 
 Pick **1** to play against the computer or **2** for the Chess Academy.
-Type moves as `<from> <to>` — for example `E2 E4`. Type `Q` to quit.
+Type moves as `<from> <to>` — for example `E2 E4`.
+
+| You want to… | Type |
+|---|---|
+| Move a piece | `E2 E4` |
+| Castle king side / queen side | `O-O` / `O-O-O` (or move the king two squares: `E1 G1`) |
+| Promote a pawn | `E7 E8` — you'll be asked which piece, or type it directly: `E7 E8 N` |
+| Quit | `Q` |
 
 ```text
 8 r n b q k b n r
@@ -91,6 +101,7 @@ Every line is replayed move by move on a real board, with a note explaining the 
 - Blackburne Shilling
 - Englund Gambit Trap
 - Elephant Trap
+- Fishing Pole Trap
 
 </td>
 <td valign="top" width="25%">
@@ -102,6 +113,8 @@ Every line is replayed move by move on a real board, with a note explaining the 
 - Scholar's finish
 - Royal fork
 - Skewer
+- En passant checkmate
+- Underpromotion
 
 <sub>Type your move, ask for a hint, or reveal the solution.</sub>
 
@@ -157,9 +170,13 @@ legal moves, the game ends: **checkmate** when the king is in check, **stalemate
 chess.py              engine + game loop + main menu
 academy.py            Chess Academy screens (lesson viewer, puzzles, tips)
 lessons.py            lesson content: openings, traps, puzzles, principles
-tests/                unit tests — engine rules and every Academy line
+tests/                unit tests — rules, perft counts and every Academy line
 tools/make_demo_gif.py  renders the GIFs in this README
 ```
+
+The rules are verified with **perft** tests: from several well-known positions the test suite counts every
+position reachable a few moves deep (e.g. 8,902 after three plies from the start) and compares the totals with
+published reference numbers. A single wrong rule — castling, en passant or promotion — would change the count.
 
 Run the tests with:
 
@@ -170,10 +187,11 @@ python3 -m unittest discover tests
 ## 🗺️ Roadmap
 
 - [x] Check, checkmate and stalemate detection
-- [ ] Castling, en passant and pawn promotion
+- [x] Castling, en passant and pawn promotion
 - [ ] A smarter opponent (minimax with material evaluation)
 - [x] Chess Academy: openings, traps, puzzles and principles
 - [x] Unit tests for the engine and every lesson
+- [ ] Draw rules: threefold repetition, 50-move rule, insufficient material
 
 ## 📜 Certificate
 

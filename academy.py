@@ -89,24 +89,40 @@ def square(name):
 
 
 def parse_move(text):
-    """Accepts 'e2e4', 'E2 E4' or 'e2-e4'."""
+    """Accepts 'e2e4', 'E2 E4', 'e2-e4' and, for promotion, 'e7e8n' or 'E7 E8 N'.
+    Returns (src, dst, promotion_letter) or None."""
     cleaned = text.strip().lower().replace(' ', '').replace('-', '')
+    promo = 'Q'
+    if len(cleaned) == 5 and cleaned[4] in 'qrbn':
+        promo, cleaned = cleaned[4].upper(), cleaned[:4]
     if len(cleaned) != 4 or cleaned[0] not in 'abcdefgh' or cleaned[2] not in 'abcdefgh' \
             or cleaned[1] not in chess.RANKS or cleaned[3] not in chess.RANKS:
         return None
-    return square(cleaned[:2]), square(cleaned[2:])
+    return square(cleaned[:2]), square(cleaned[2:4]), promo
+
+
+def coord_move(coord):
+    """'e7e8n' -> (src, dst, 'N'); promotion defaults to a queen."""
+    return square(coord[:2]), square(coord[2:4]), (coord[4].upper() if len(coord) > 4 else 'Q')
 
 
 PIECES_BY_LETTER = {'k': chess.King, 'q': chess.Queen, 'r': chess.Rook,
                     'b': chess.Bishop, 'n': chess.Knight, 'p': chess.Pawn}
 
 
-def board_from_fen(placement):
-    """Build a Board from the piece-placement field of a FEN string."""
+def board_from_fen(fen):
+    """Build a Board from a FEN string. Only the piece placement is required;
+    castling rights (field 3) and the en passant square (field 4) are read if present."""
+    fields = fen.split()
+    placement = fields[0]
     board = chess.Board()
-    for row in board.grid:
-        for spot in row:
-            spot.piece = None
+    board.clear()
+    if len(fields) > 2:
+        for letter in fields[2].replace('-', ''):
+            color = chess.WHITE if letter.isupper() else chess.BLACK
+            board.castling[color][letter.upper()] = True
+    if len(fields) > 3 and fields[3] != '-':
+        board.en_passant = square(fields[3])
     for r, rank in enumerate(placement.split('/')):
         c = 0
         for ch in rank:
@@ -126,10 +142,10 @@ def play_line(moves, upto):
     color = chess.WHITE
     last = None
     for coord, san, _ in moves[:upto]:
-        src, dst = square(coord[:2]), square(coord[2:])
+        src, dst, promo = coord_move(coord)
         if (src, dst) not in board.legal_moves(color):
             raise ValueError(f'Illegal move in lesson: {san} ({coord})')
-        board.move_piece(board.get_spot(*src), board.get_spot(*dst))
+        board.move_piece(board.get_spot(*src), board.get_spot(*dst), promo)
         last = (src, dst)
         color = chess.opponent(color)
     return board, color, last
@@ -212,7 +228,7 @@ def puzzle_screen(puzzle, number, total):
         if message:
             print('  ' + message)
             print()
-        print(dim('  Type a move like D1 D8  ·  [h] hint  [s] show solution  [q] menu'))
+        print(dim('  Type a move like D1 D8 (E7 E8 N to promote)  ·  [h] hint  [s] show solution  [q] menu'))
         text = ask('  > ').strip()
         cmd = text.lower()
         if cmd == 'q':
@@ -220,41 +236,50 @@ def puzzle_screen(puzzle, number, total):
         if cmd == 'h':
             message = 'Hint: ' + puzzle['hint']
             continue
+        solution = coord_move(puzzle['solution'])
         if cmd == 's':
-            reveal(board, puzzle, color, solved=False)
+            reveal(board, puzzle, color, solution, solved=False)
             return True
         move = parse_move(text)
         if not move:
             message = bad('Could not read that move. Example: D1 D8')
             continue
-        if move not in board.legal_moves(color):
+        src, dst, promo = move
+        if (src, dst) not in board.legal_moves(color):
             message = bad('That move is not legal here. Try again.')
             continue
-        src, dst = move
-        if move == (square(puzzle['solution'][:2]), square(puzzle['solution'][2:])):
-            reveal(board, puzzle, color, solved=True)
+        is_promo = board.is_promotion(board.get_spot(*src), board.get_spot(*dst))
+        if (src, dst) == solution[:2] and (not is_promo or promo == solution[2]):
+            reveal(board, puzzle, color, solution, solved=True)
             return True
         if puzzle['goal'] == 'mate':
-            captured = board.move_piece(board.get_spot(*src), board.get_spot(*dst))
-            mated = board.in_check(chess.opponent(color)) and not board.legal_moves(chess.opponent(color))
-            board.undo_move(board.get_spot(*src), board.get_spot(*dst), captured)
+            record = board.move_piece(board.get_spot(*src), board.get_spot(*dst), promo)
+            other = chess.opponent(color)
+            mated = board.in_check(other) and not board.legal_moves(other)
+            board.undo_move(record)
             if mated:
-                reveal(board, puzzle, color, solved=True)
+                reveal(board, puzzle, color, move, solved=True, alternative=True)
                 return True
+        if is_promo and (src, dst) == solution[:2]:
+            message = bad('Right square — but promote to a different piece!')
+            continue
         message = bad('Legal, but not the best move. Try again!')
 
 
-def reveal(board, puzzle, color, solved):
-    src = square(puzzle['solution'][:2])
-    dst = square(puzzle['solution'][2:])
-    board.move_piece(board.get_spot(*src), board.get_spot(*dst))
+def reveal(board, puzzle, color, move, solved, alternative=False):
+    src, dst, promo = move
+    board.move_piece(board.get_spot(*src), board.get_spot(*dst), promo)
     clear_screen()
     print(accent(f"  {puzzle['name']}"))
     print()
     render_board(board, highlight=(src, dst), check=king_in_check(board, chess.opponent(color)))
     print()
-    print('  ' + (good('Correct!  ') if solved else dim('Solution: ')) + bold(puzzle['san']))
-    print('  ' + puzzle['explanation'])
+    if alternative:
+        print('  ' + good('Correct! ') + 'That is checkmate too.')
+        print('  ' + dim(f"The book solution is {puzzle['san']}: {puzzle['explanation']}"))
+    else:
+        print('  ' + (good('Correct!  ') if solved else dim('Solution: ')) + bold(puzzle['san']))
+        print('  ' + puzzle['explanation'])
     print()
     ask(dim('  [Enter] continue '))
 
