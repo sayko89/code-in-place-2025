@@ -1,138 +1,149 @@
-<div align="center">
+<p align="center">
+  <img src="assets/hero.png" alt="Chess Lab — A Study in Game Logic. Stanford Code in Place 2025 final project by Safiye Özkan. Beside the title, a chessboard showing Légal's Mate." width="100%">
+</p>
 
-# ♞ Terminal Chess
+<p align="center">
+  <a href="#demo">Demo</a> &nbsp;·&nbsp;
+  <a href="#stanford-code-in-place-2025">Stanford Code in Place</a> &nbsp;·&nbsp;
+  <a href="#how-the-game-thinks">Game logic</a> &nbsp;·&nbsp;
+  <a href="#run-it">Run it</a> &nbsp;·&nbsp;
+  <a href="assets/certificate.pdf">Certificate</a>
+</p>
 
-**A chess game and chess school in the terminal, written in pure Python — my final project for Stanford's Code in Place 2025.**
+<br>
 
-[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![No dependencies](https://img.shields.io/badge/dependencies-none-2ea44f?style=for-the-badge)](#-quick-start)
-[![Tests](https://img.shields.io/badge/tests-passing-2ea44f?style=for-the-badge)](tests/test_lessons.py)
-[![Code in Place](https://img.shields.io/badge/Stanford-Code_in_Place_2025-8C1515?style=for-the-badge)](https://codeinplace.stanford.edu/)
+**Chess Lab** is a complete game of chess that runs in your terminal, written in pure Python with no
+third-party libraries. You play White against a computer opponent; every rule of chess is enforced,
+including castling, en passant and promotion, and the game ends in checkmate or stalemate. A second
+mode, the **Chess Academy**, replays famous openings and traps move by move and gives you puzzles to solve.
 
-<img src="assets/demo.gif" alt="Animated demo: Scholar's Mate ending in checkmate" width="460">
+It began as my final project for **Stanford's Code in Place 2025**, and I have kept developing it since.
 
-<sub>Every move in this animation is validated by the game's own engine — see <a href="tools/make_demo_gif.py"><code>tools/make_demo_gif.py</code></a>.</sub>
+<br>
 
-</div>
+## Demo
 
----
+<p align="center">
+  <img src="assets/demo.gif" alt="Animated game: 1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6 4.Qxf7 checkmate" width="560">
+</p>
 
-## ✨ Features
+The animation is drawn by a script, but the moves are not scripted by hand: each one is checked
+against the engine's list of legal moves, and the engine itself confirms the final checkmate.
+Here is what the game actually looks like in a terminal:
 
-|   |   |
-|---|---|
-| ♟️ **Full piece movement** | All six piece types, including the pawn's double step from its starting rank |
-| 🚧 **Path checking** | Rooks, bishops and queens can't jump over other pieces |
-| 👑 **Check & checkmate** | The game announces check, detects checkmate and ends with a winner |
-| 🤝 **Stalemate** | No legal moves without being in check is correctly called a draw |
-| 📌 **Pins respected** | Any move that would leave your own king in check is rejected |
-| 🏰 **Castling** | King and queen side, with every rule: no castling out of, through or into check |
-| 👻 **En passant** | Capture a pawn that just made a double step — only on the very next move |
-| 🔄 **Promotion** | Promote to a queen, rook, bishop or knight |
-| 🤖 **Computer opponent** | Plays Black by choosing a random legal move |
-| 🎓 **Chess Academy** | Openings, traps, puzzles and principles — see below |
+<p align="center">
+  <img src="assets/terminal-play.png" alt="Terminal output: the board as letters, the prompt, and the line 'You played: E1 to G1 (castles king side)'" width="560">
+</p>
 
-## 🚀 Quick start
+<br>
 
-```bash
-git clone https://github.com/sayko89/code-in-place-2025.git
-cd code-in-place-2025
-python3 chess.py
-```
+## Stanford Code in Place 2025
 
-Pick **1** to play against the computer or **2** for the Chess Academy.
-Type moves as `<from> <to>` — for example `E2 E4`.
+<p align="center">
+  <img src="assets/certificate-plate.png" alt="Code in Place certificate of completion, Stanford University, April 21 to June 6, 2025, awarded to Safiye Özkan, with Diagnostic and Final Project badges" width="100%">
+</p>
 
-| You want to… | Type |
-|---|---|
-| Move a piece | `E2 E4` |
-| Castle king side / queen side | `O-O` / `O-O-O` (or move the king two squares: `E1 G1`) |
-| Promote a pawn | `E7 E8` — you'll be asked which piece, or type it directly: `E7 E8 N` |
-| Quit | `Q` |
+[Code in Place](https://codeinplace.stanford.edu/) is a free, online introduction to programming run by
+Stanford University. It teaches the material of Stanford's first programming course, **CS106A
+Programming Methodologies**, in Python: Karel the Robot, console programming, graphics, lists and
+dictionaries. I took part in the spring 2025 edition (April 21 – June 6, 2025), and this chess game was
+the final project I submitted to complete the course.
 
-```text
-8 r n b q k b n r
-7 p p p p p p p p
-6 . . . . . . . .
-5 . . . . . . . .
-4 . . . . P . . .
-3 . . . . . . . .
-2 P P P P . P P P
-1 R N B Q K B N R
-  A B C D E F G H
-Turn: Black
-Computer played: G8 to F6
-```
+> [!NOTE]
+> This is an independent student project created as part of the course. It is not published,
+> maintained or endorsed by Stanford University.
 
-<sub>Uppercase = White, lowercase = Black · <b>K</b> king · <b>Q</b> queen · <b>R</b> rook · <b>B</b> bishop · <b>N</b> knight · <b>P</b> pawn</sub>
+**Project history.** The course version had the six piece types and their movement rules, the board,
+and a computer that plays a random move. That original state of the repository is preserved at
+[commit `d843cca`](https://github.com/sayko89/code-in-place-2025/tree/d843cca) (June 2025).
+In October 2026 I extended it with check and checkmate, castling, en passant, promotion, the Chess
+Academy and a test suite. The object-oriented design from the original is unchanged.
 
-## 🎓 Chess Academy
+<br>
 
-Choose **2** in the main menu to open the Academy — a small chess school inside the game.
-Every line is replayed move by move on a real board, with a note explaining the idea behind each move.
-
-<div align="center">
-<img src="assets/academy.gif" alt="Chess Academy replaying Légal's Mate with move-by-move notes" width="460">
-</div>
+## What it does
 
 <table>
-<tr>
-<td valign="top" width="25%">
-
-**📖 Openings**
-
-- Italian Game
-- Ruy Lopez
-- Sicilian Najdorf
-- French Defence
-- Caro-Kann
-- Queen's Gambit Declined
-- King's Indian
-- London System
-
-</td>
-<td valign="top" width="25%">
-
-**🪤 Traps**
-
-- Fool's Mate
-- Scholar's Mate
-- Légal's Mate
-- Blackburne Shilling
-- Englund Gambit Trap
-- Elephant Trap
-- Fishing Pole Trap
-
-</td>
-<td valign="top" width="25%">
-
-**🧩 Puzzles**
-
-- Back-rank mate
-- Smothered mate
-- Scholar's finish
-- Royal fork
-- Skewer
-- En passant checkmate
-- Underpromotion
-
-<sub>Type your move, ask for a hint, or reveal the solution.</sub>
-
-</td>
-<td valign="top" width="25%">
-
-**💡 Principles**
-
-10 rules of thumb — control the center, develop, castle early, watch f7…
-
-</td>
-</tr>
+<tr><td width="30%"><b>Every rule of chess</b></td><td>Movement for all six pieces, captures, check, <b>checkmate</b> and <b>stalemate</b>, <b>castling</b> on both sides, <b>en passant</b> and <b>promotion</b> to any piece. Moves that would leave your own king in check — including moving a pinned piece — are rejected with an explanation.</td></tr>
+<tr><td><b>Play the computer</b></td><td>You are White, the computer is Black. Type <code>E2 E4</code>, <code>O-O</code>, or <code>E7 E8 N</code> to promote to a knight.</td></tr>
+<tr><td><b>Chess Academy</b></td><td>8 openings and 7 traps replayed move by move with a note on every move; 7 puzzles with hints; 10 principles for beginners.</td></tr>
+<tr><td><b>Verified</b></td><td>22 automated tests, including <i>perft</i> checks against published reference counts. Every Academy line is replayed by the engine in the tests.</td></tr>
 </table>
 
-In a real terminal the Academy uses a coloured board with chess glyphs and highlights the last move and a king in check.
-Every opening, trap and puzzle is checked by the test suite, so the Academy can only show moves the engine accepts.
+### The Chess Academy
 
-## 🧩 How it works
+<p align="center">
+  <img src="assets/academy.gif" alt="The Academy replaying Légal's Mate, with a short note under each move" width="560">
+</p>
+
+| Openings | Traps | Puzzles |
+|---|---|---|
+| Italian Game · Ruy Lopez · Sicilian Najdorf · French · Caro-Kann · Queen's Gambit Declined · King's Indian · London System | Fool's Mate · Scholar's Mate · Légal's Mate · Blackburne Shilling · Englund Gambit · Elephant Trap · Fishing Pole | Back-rank mate · Smothered mate · Scholar's finish · Royal fork · Skewer · En passant checkmate · Underpromotion |
+
+In a colour terminal the Academy draws a shaded board, highlights the last move and marks a king in check:
+
+<p align="center">
+  <img src="assets/terminal-academy.png" alt="Terminal output of the Academy: a coloured board after Légal's Mate, the move list, and the note for 7. Nd5#" width="560">
+</p>
+
+<br>
+
+## How the game thinks
+
+Deciding whether a move is legal happens in two steps.
+
+**1. Can the piece move there?** Each piece class answers this for itself in `can_move(board, start, end)`:
+a knight checks for an L-shape, a bishop for a clear diagonal (`Board.is_clear_path`), a pawn for one
+step forward, two from its starting rank, a diagonal capture, or an en passant capture. Castling is
+handled separately by `Board.castling_moves`, because it involves two pieces and has extra conditions:
+neither piece may have moved, the squares between them must be empty, and the king may not be in check,
+pass through an attacked square, or land on one.
+
+**2. Is the king safe afterwards?** `Board.legal_moves` plays each candidate move on the real board,
+asks `in_check`, and takes the move back. `move_piece` returns a small record of every square it changed
+— plus the castling rights and the en passant square — so `undo_move` restores the exact position, even
+after castling, en passant or a promotion.
+
+```python
+def legal_moves(self, color):
+    return [m for m in self.pseudo_legal_moves(color) if self.leaves_king_safe(m, color)]
+```
+
+**How a game ends.** At the start of every turn the game counts the legal moves. None while in check is
+**checkmate**; none while not in check is **stalemate**. The draw rules — threefold repetition, the
+50-move rule and insufficient material — are not implemented yet.
+
+**How I know it is right.** *Perft* is the standard test for chess move generators: from a position,
+count every position reachable in *n* moves and compare with published numbers. If one rule were even
+slightly wrong — say, castling through check — the totals would differ.
+
+| Position | Tests | Depth | Expected | Chess Lab |
+|---|---|:---:|---:|---:|
+| Starting position | normal moves | 3 | 8,902 | 8,902 ✓ |
+| "Kiwipete" | castling, pins, en passant | 2 | 2,039 | 2,039 ✓ |
+| Rook-and-pawn endgame | en passant, discovered checks | 3 | 2,812 | 2,812 ✓ |
+| Promotion position | promotions, castling rights | 2 | 264 | 264 ✓ |
+
+<sub>Reference numbers: <a href="https://www.chessprogramming.org/Perft_Results">Chess Programming Wiki — Perft Results</a>.</sub>
+
+<br>
+
+## The computer player
+
+The computer does not search or evaluate positions. On its turn it asks the engine for every legal move
+and picks one **uniformly at random**; when a pawn promotes, it always chooses a queen.
+
+```python
+src, dest = random.choice(self.board.legal_moves(BLACK))
+```
+
+So it always plays a legal move and will deliver checkmate if it stumbles into one, but it does not
+plan. It is an easy opponent — good for trying out the openings and traps from the Academy. A
+minimax search with material evaluation is the natural next step (see the [roadmap](#roadmap)).
+
+<br>
+
+## Architecture
 
 ```mermaid
 classDiagram
@@ -152,54 +163,101 @@ classDiagram
       play()
     }
     class Board {
+      castling
+      en_passant
       legal_moves(color)
+      castling_moves(color)
       in_check(color)
-      move_piece() / undo_move()
+      move_piece() record
+      undo_move(record)
     }
     class Piece {
       color
       can_move(board, start, end)
+      attacks(board, start, end)
     }
 ```
 
-Each piece only knows its own movement pattern (`can_move`). The `Board` turns those into **legal** moves by
-playing every candidate move, checking whether the mover's king is attacked, and undoing it. If a player has no
-legal moves, the game ends: **checkmate** when the king is in check, **stalemate** otherwise.
+| File | Purpose |
+|---|---|
+| [`chess.py`](chess.py) | The engine (`Spot`, `Piece` and its six subclasses, `Board`), the game loop and the main menu |
+| [`academy.py`](academy.py) | Academy screens: lesson viewer, puzzle trainer, principles; coloured board for terminals |
+| [`lessons.py`](lessons.py) | Academy content as plain data: openings, traps, puzzles, principles |
+| [`tests/`](tests) | Rule tests, perft tests, and a test that replays every lesson and puzzle |
+| [`tools/make_assets.py`](tools/make_assets.py) | Renders the images in this README from the engine and from real program output |
 
-```text
-chess.py              engine + game loop + main menu
-academy.py            Chess Academy screens (lesson viewer, puzzles, tips)
-lessons.py            lesson content: openings, traps, puzzles, principles
-tests/                unit tests — rules, perft counts and every Academy line
-tools/make_demo_gif.py  renders the GIFs in this README
+<br>
+
+## Technology
+
+- **Python 3** and its standard library only — `random`, `sys`, `os` and `unittest`. Nothing to install.
+- **Object-oriented design**: one class per piece, polymorphic `can_move`.
+- **Pillow** and **poppler** are used only by `tools/make_assets.py` to draw the README images; the game does not need them.
+
+<br>
+
+## Run it
+
+You need Python 3.
+
+```bash
+git clone https://github.com/sayko89/code-in-place-2025.git
+cd code-in-place-2025
+python3 chess.py
 ```
 
-The rules are verified with **perft** tests: from several well-known positions the test suite counts every
-position reachable a few moves deep (e.g. 8,902 after three plies from the start) and compares the totals with
-published reference numbers. A single wrong rule — castling, en passant or promotion — would change the count.
+Choose **1** to play or **2** for the Chess Academy.
 
-Run the tests with:
+| To… | Type |
+|---|---|
+| move a piece | `E2 E4` |
+| castle king side / queen side | `O-O` / `O-O-O` |
+| promote a pawn | `E7 E8` and pick a piece, or `E7 E8 N` |
+| quit | `Q` |
+
+Run the tests:
 
 ```bash
 python3 -m unittest discover tests
 ```
 
-## 🗺️ Roadmap
+<br>
 
-- [x] Check, checkmate and stalemate detection
-- [x] Castling, en passant and pawn promotion
-- [ ] A smarter opponent (minimax with material evaluation)
-- [x] Chess Academy: openings, traps, puzzles and principles
-- [x] Unit tests for the engine and every lesson
+## What I learned
+
+- **Let each object answer its own question.** Giving every piece its own `can_move` kept the rules
+  small and readable, and adding new behaviour later (pawn attacks, en passant) meant changing one class.
+- **"Can it move there?" and "Is the move legal?" are different questions.** Separating them is what made
+  check, pins and checkmate possible without rewriting the pieces.
+- **Every change must be reversible.** Trying a move and taking it back only works if *all* state —
+  captured pieces, castling rights, the en passant square — is restored. Returning a record from
+  `move_piece` made that reliable.
+- **Test against known answers.** Perft numbers caught mistakes that playing a few games never would.
+
+<br>
+
+## Roadmap
+
+- [x] Check, checkmate and stalemate
+- [x] Castling, en passant and promotion
+- [x] Chess Academy
+- [x] Tests, including perft
 - [ ] Draw rules: threefold repetition, 50-move rule, insufficient material
+- [ ] A computer player that searches (minimax with material evaluation)
 
-## 📜 Certificate
+<br>
 
-Completed **Stanford's Code in Place 2025** (based on CS106A) —
-[verified certificate](https://codeinplace.stanford.edu/cip5/certificate/pj0y0n) · [PDF](assets/certificate.pdf)
+## Certificate and attribution
 
----
+- **Certificate:** [assets/certificate.pdf](assets/certificate.pdf) ·
+  [verify on the Code in Place site](https://codeinplace.stanford.edu/cip5/certificate/pj0y0n)
+- Code in Place is a program of Stanford University. This repository is my own independent work and is
+  not affiliated with or endorsed by Stanford.
+- README typefaces: [Playfair Display](https://github.com/clauseggers/Playfair-Display) and
+  [IBM Plex](https://github.com/IBM/plex), both under the SIL Open Font License (see [`tools/fonts`](tools/fonts)).
+  Chess pieces are drawn with [DejaVu](https://dejavu-fonts.github.io/) glyphs.
+- Perft reference numbers from the [Chess Programming Wiki](https://www.chessprogramming.org/Perft_Results).
 
-<div align="center">
-<sub>Made with ♥ and Python by <a href="https://github.com/sayko89">Safiye Özkan</a></sub>
-</div>
+<br>
+
+<p align="center"><sub>Chess Lab · Safiye Özkan · Code in Place 2025</sub></p>

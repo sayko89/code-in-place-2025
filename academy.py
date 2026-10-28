@@ -33,7 +33,7 @@ def dim(text):
 
 
 def accent(text):
-    return style(text, 1, 36)
+    return style(text, 1, 33)
 
 
 def good(text):
@@ -58,7 +58,7 @@ def render_board(board, highlight=(), check=None):
         board.print_board()
         return
     light, dark = 223, 137          # 256-colour palette
-    hl_light, hl_dark = 229, 185
+    hl_light, hl_dark = 222, 179
     for r in range(8):
         line = dim(f' {8 - r} ')
         for c in range(8):
