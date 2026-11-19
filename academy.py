@@ -51,14 +51,17 @@ def clear_screen():
         print('\n' + '-' * 50)
 
 
-def render_board(board, highlight=(), check=None):
+# Square colours from the 256-colour palette: light, dark, highlighted light, highlighted dark, check
+CLASSIC = (223, 137, 222, 179, 203)
+
+
+def render_board(board, highlight=(), check=None, palette=CLASSIC):
     """Print the board. Uses coloured squares and chess glyphs on a real terminal,
     and falls back to the plain letter board otherwise."""
     if not USE_COLOR:
         board.print_board()
         return
-    light, dark = 223, 137          # 256-colour palette
-    hl_light, hl_dark = 222, 179
+    light, dark, hl_light, hl_dark, check_bg = palette
     for r in range(8):
         line = dim(f' {8 - r} ')
         for c in range(8):
@@ -67,7 +70,7 @@ def render_board(board, highlight=(), check=None):
             if (r, c) in highlight:
                 bg = hl_light if is_light else hl_dark
             if check == (r, c):
-                bg = 203
+                bg = check_bg
             piece = board.get_spot(r, c).piece
             if piece:
                 fg = '38;5;231' if piece.color == chess.WHITE else '38;5;16'

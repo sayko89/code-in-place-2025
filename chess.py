@@ -456,6 +456,7 @@ def main_menu():
         print('=' * 34)
         print('  1. Play against the computer')
         print('  2. Chess Academy (openings, traps, puzzles)')
+        print("  3. New Year's Eve mode (countdown puzzles)")
         print('  Q. Quit')
         try:
             choice = input('> ').strip().lower()
@@ -466,6 +467,9 @@ def main_menu():
         elif choice == '2':
             import academy  # imported lazily so chess.py also works on its own
             academy.academy()
+        elif choice == '3':
+            import winter
+            winter.winter_mode()
         elif choice in ('q', 'quit'):
             print('Goodbye!')
             return
