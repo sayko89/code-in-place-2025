@@ -385,3 +385,93 @@ TIPS = [
     ('Rooks love open files', 'Put rooks on files with no pawns, and double them up.'),
     ('In the endgame, activate your king', 'With fewer pieces on the board, the king becomes a strong fighter.'),
 ]
+
+# ---------------------------------------------------------------------------
+# New Year's Eve mode: twelve chimes to midnight, one checkmate-in-1 per chime
+# ---------------------------------------------------------------------------
+NEW_YEAR_PUZZLES = [
+    {
+        'name': 'Snowed In',
+        'fen': '6k1/5ppp/8/8/8/8/1Q3PPP/6K1',
+        'solution': 'b2b8', 'san': 'Qb8#',
+        'hint': "The king's own pawns are piled up like snow in front of the door.",
+        'explanation': 'Back-rank mate: the queen checks on the 8th rank and the pawns block every escape.',
+    },
+    {
+        'name': 'Down the Chimney',
+        'fen': 'kr6/pp6/8/3N4/8/8/8/K7',
+        'solution': 'd5c7', 'san': 'Nc7#',
+        'hint': 'Only one piece can come in over the rooftops.',
+        'explanation': 'Smothered mate: the king is boxed in by its own pieces and a knight check cannot be blocked.',
+    },
+    {
+        'name': 'Sleigh Ride',
+        'fen': '5r1k/6pp/8/8/8/8/1Q6/B5K1',
+        'solution': 'b2g7', 'san': 'Qxg7#',
+        'hint': 'The queen rides the long diagonal, and the bishop pushes from behind.',
+        'explanation': 'The bishop on a1 defends g7, so the king cannot take the queen.',
+    },
+    {
+        'name': 'Unwrap the Gift',
+        'fen': 'k7/2P5/1K6/8/8/8/8/8',
+        'solution': 'c7c8q', 'san': 'c8=Q#',
+        'hint': 'Your pawn is one step away from becoming something much bigger.',
+        'explanation': 'The new queen checks along the 8th rank; your king covers a7 and b7. (c8=R# works too!)',
+    },
+    {
+        'name': 'Frozen Lake',
+        'fen': '7k/8/6K1/8/8/8/8/R7',
+        'solution': 'a1a8', 'san': 'Ra8#',
+        'hint': 'Your king already guards the 7th rank. Slide across the ice.',
+        'explanation': 'The rook controls the 8th rank and your king takes away g7 and h7.',
+    },
+    {
+        'name': 'Candlelight',
+        'fen': '8/4N1pk/8/8/8/R7/8/6K1',
+        'solution': 'a3h3', 'san': 'Rh3#',
+        'hint': 'The knight already blocks g8 and g6. Find the open file.',
+        'explanation': "Anastasia's mate: the rook checks on the h-file and the knight covers the escape squares.",
+    },
+    {
+        'name': 'Bell Tower',
+        'fen': '7k/1R6/5N2/8/8/8/8/6K1',
+        'solution': 'b7h7', 'san': 'Rh7#',
+        'hint': 'Ring the bell right next to the king. Who protects the rook there?',
+        'explanation': 'Arabian mate: the knight defends the rook on h7 and also covers g8.',
+    },
+    {
+        'name': 'Mistletoe',
+        'fen': '2kr4/p2n4/2p5/8/5B2/8/4B3/6K1',
+        'solution': 'e2a6', 'san': 'Ba6#',
+        'hint': 'Two bishops can cross over each other, like a kiss under the mistletoe.',
+        'explanation': "Boden's mate: two bishops on criss-crossing diagonals trap the king on c8.",
+    },
+    {
+        'name': 'Midnight Watch',
+        'fen': '5rk1/5p2/6P1/8/8/8/8/6KQ',
+        'solution': 'h1h7', 'san': 'Qh7#',
+        'hint': 'The g6 pawn is keeping watch over one square.',
+        'explanation': 'The queen lands on h7 protected by the pawn, and the rook on f8 blocks the last exit.',
+    },
+    {
+        'name': 'Party Shoulders',
+        'fen': '3rkr2/8/8/8/8/8/Q7/6K1',
+        'solution': 'a2e6', 'san': 'Qe6#',
+        'hint': 'The king is wearing its rooks like shoulder pads.',
+        'explanation': 'Epaulette mate: the rooks on d8 and f8 block the king, and the queen covers d7, e7 and f7.',
+    },
+    {
+        'name': 'Night at the Opera',
+        'fen': '4kb2/5p2/4q3/6B1/8/8/8/3R2K1',
+        'solution': 'd1d8', 'san': 'Rd8#',
+        'hint': 'The bishop on g5 is watching the whole diagonal up to d8.',
+        'explanation': "Opera mate (Morphy, 1858): the bishop protects the rook and covers e7.",
+    },
+    {
+        'name': 'The Last Chime',
+        'fen': 'k7/8/1K6/8/8/8/7Q/8',
+        'solution': 'h2h8', 'san': 'Qh8#',
+        'hint': 'Your king guards a7 and b7. The queen needs the 8th rank.',
+        'explanation': 'The queen checks along the 8th rank while your king covers the last two squares. Happy New Year!',
+    },
+]

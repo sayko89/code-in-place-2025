@@ -16,6 +16,7 @@
 third-party libraries. You play White against a computer opponent; every rule of chess is enforced,
 including castling, en passant and promotion, and the game ends in checkmate or stalemate. A second
 mode, the **Chess Academy**, replays famous openings and traps move by move and gives you puzzles to solve.
+A seasonal **New Year's Eve mode** counts down to midnight with twelve checkmate puzzles.
 
 It began as my final project for **Stanford's Code in Place 2025**, and I have kept developing it since.
 
@@ -57,7 +58,7 @@ the final project I submitted to complete the course.
 and a computer that plays a random move. That original state of the repository is preserved at
 [commit `d843cca`](https://github.com/sayko89/code-in-place-2025/tree/d843cca) (June 2025).
 In October 2026 I extended it with check and checkmate, castling, en passant, promotion, the Chess
-Academy and a test suite. The object-oriented design from the original is unchanged.
+Academy and a test suite. The object-oriented design from the original is unchanged. In November 2026 I added a seasonal New Year's Eve mode.
 
 <br>
 
@@ -67,7 +68,8 @@ Academy and a test suite. The object-oriented design from the original is unchan
 <tr><td width="30%"><b>Every rule of chess</b></td><td>Movement for all six pieces, captures, check, <b>checkmate</b> and <b>stalemate</b>, <b>castling</b> on both sides, <b>en passant</b> and <b>promotion</b> to any piece. Moves that would leave your own king in check — including moving a pinned piece — are rejected with an explanation.</td></tr>
 <tr><td><b>Play the computer</b></td><td>You are White, the computer is Black. Type <code>E2 E4</code>, <code>O-O</code>, or <code>E7 E8 N</code> to promote to a knight.</td></tr>
 <tr><td><b>Chess Academy</b></td><td>8 openings and 7 traps replayed move by move with a note on every move; 7 puzzles with hints; 10 principles for beginners.</td></tr>
-<tr><td><b>Verified</b></td><td>22 automated tests, including <i>perft</i> checks against published reference counts. Every Academy line is replayed by the engine in the tests.</td></tr>
+<tr><td><b>New Year's Eve mode</b></td><td>Snowfall intro, <i>Countdown to Midnight</i> — 12 mate-in-1 puzzles, one per chime, ending in fireworks — and a game on an icy board.</td></tr>
+<tr><td><b>Verified</b></td><td>28 automated tests, including <i>perft</i> checks against published reference counts. Every Academy line is replayed by the engine in the tests.</td></tr>
 </table>
 
 ### The Chess Academy
@@ -85,6 +87,24 @@ In a colour terminal the Academy draws a shaded board, highlights the last move 
 <p align="center">
   <img src="assets/terminal-academy.png" alt="Terminal output of the Academy: a coloured board after Légal's Mate, the move list, and the note for 7. Nd5#" width="560">
 </p>
+
+### New Year's Eve mode
+
+Choose **3** in the main menu. After a short snowfall, the clock stands at 23:48. Every puzzle you
+finish rings one chime and moves the clock a minute forward; the twelfth chime is midnight, and
+fireworks go off. Each puzzle is a named checkmate pattern — back-rank, smothered, Anastasia's,
+Arabian, Boden's, epaulette, Opera — dressed up for the season. Any mating move is accepted, and at
+the end you see how many you solved on the first try without a hint.
+
+<p align="center">
+  <img src="assets/terminal-winter.png" alt="Terminal output of New Year's Eve mode: the clock at 23:56, eight of twelve chimes rung, and the puzzle Midnight Watch on an ice-blue board" width="560">
+</p>
+
+| Chime | Puzzle | Pattern |
+|:---:|---|---|
+| 1–4 | Snowed In · Down the Chimney · Sleigh Ride · Unwrap the Gift | back-rank · smothered · queen-and-bishop battery · promotion |
+| 5–8 | Frozen Lake · Candlelight · Bell Tower · Mistletoe | rook and king · Anastasia's · Arabian · Boden's |
+| 9–12 | Midnight Watch · Party Shoulders · Night at the Opera · The Last Chime | pawn-supported queen · epaulette · Opera · queen and king |
 
 <br>
 
@@ -182,15 +202,16 @@ classDiagram
 |---|---|
 | [`chess.py`](chess.py) | The engine (`Spot`, `Piece` and its six subclasses, `Board`), the game loop and the main menu |
 | [`academy.py`](academy.py) | Academy screens: lesson viewer, puzzle trainer, principles; coloured board for terminals |
-| [`lessons.py`](lessons.py) | Academy content as plain data: openings, traps, puzzles, principles |
-| [`tests/`](tests) | Rule tests, perft tests, and a test that replays every lesson and puzzle |
+| [`winter.py`](winter.py) | New Year's Eve mode: snowfall and fireworks, the countdown puzzles, the icy board |
+| [`lessons.py`](lessons.py) | Academy and New Year content as plain data: openings, traps, puzzles, principles |
+| [`tests/`](tests) | Rule tests, perft tests, and tests that replay every lesson and check every puzzle is mate |
 | [`tools/make_assets.py`](tools/make_assets.py) | Renders the images in this README from the engine and from real program output |
 
 <br>
 
 ## Technology
 
-- **Python 3** and its standard library only — `random`, `sys`, `os` and `unittest`. Nothing to install.
+- **Python 3** and its standard library only — `random`, `sys`, `os`, `time`, `datetime` and `unittest`. Nothing to install.
 - **Object-oriented design**: one class per piece, polymorphic `can_move`.
 - **Pillow** and **poppler** are used only by `tools/make_assets.py` to draw the README images; the game does not need them.
 
@@ -206,7 +227,7 @@ cd code-in-place-2025
 python3 chess.py
 ```
 
-Choose **1** to play or **2** for the Chess Academy.
+Choose **1** to play, **2** for the Chess Academy or **3** for New Year's Eve mode.
 
 | To… | Type |
 |---|---|
@@ -242,6 +263,7 @@ python3 -m unittest discover tests
 - [x] Castling, en passant and promotion
 - [x] Chess Academy
 - [x] Tests, including perft
+- [x] New Year's Eve mode (November 2026)
 - [ ] Draw rules: threefold repetition, 50-move rule, insufficient material
 - [ ] A computer player that searches (minimax with material evaluation)
 

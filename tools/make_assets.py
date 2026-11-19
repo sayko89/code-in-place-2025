@@ -5,9 +5,10 @@
     assets/academy.gif            Fig. 4  Chess Academy — Légal's Mate with notes
     assets/terminal-play.png      Fig. 3  Real output of `python3 chess.py`
     assets/terminal-academy.png   Fig. 5  Real output of the Academy (ANSI colours)
+    assets/terminal-winter.png    Fig. 6  Real output of New Year's Eve mode (ANSI colours)
     assets/certificate-plate.png  The Code in Place certificate (page 1 of assets/certificate.pdf)
 
-Every chess position is produced by the game's own engine, and the two terminal
+Every chess position is produced by the game's own engine, and the three terminal
 plates are rendered from the program's actual output — nothing is mocked up.
 
 Requirements (only for regenerating images, not for playing): Pillow, and
@@ -30,7 +31,7 @@ sys.path.insert(0, ROOT)
 
 import chess  # noqa: E402
 from academy import coord_move, play_line  # noqa: E402
-from lessons import TRAPS  # noqa: E402
+from lessons import NEW_YEAR_PUZZLES, TRAPS  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Brand
@@ -364,7 +365,7 @@ def make_terminal_plate(text, out, fig, caption, command):
             color = fg or IVORY
             if dim and not fg:
                 color = MUTED
-            f = glyph_f if '♔' <= ch <= '♟' else (bold_f if bold else regular)
+            f = glyph_f if '♔' <= ch <= '♟' or ch in '●○★☆' else (bold_f if bold else regular)
             if ch.strip():
                 d.text((x + cw / 2, y + lh / 2 - 2), ch, font=f, fill=color, anchor='mm')
     img.convert('RGB').save(out, optimize=True)
@@ -389,10 +390,9 @@ def capture_play_session():
     return '\n'.join(lines[start:end + 1])
 
 
-def capture_academy_screen():
-    """Run the Academy in a pseudo-terminal (so it uses colours) and grab the last screen
-    of Légal's Mate."""
-    keys = '2\n3\n' + '\n' * 13
+def pty_screen(code, keys):
+    """Run `code` in a pseudo-terminal (so it uses colours), type `keys`, and return the
+    raw output."""
     with tempfile.TemporaryDirectory() as tmp:
         script = os.path.join(tmp, 'run.py')
         with open(script, 'w') as f:
@@ -400,7 +400,7 @@ def capture_academy_screen():
                     f'os.chdir({ROOT!r})\n'
                     'pid, fd = pty.fork()\n'
                     'if pid == 0:\n'
-                    f'    os.execvp({sys.executable!r}, [{sys.executable!r}, "-c", "import academy; academy.academy()"])\n'
+                    f'    os.execvp({sys.executable!r}, [{sys.executable!r}, "-c", {code!r}])\n'
                     'import time\n'
                     f'keys = {keys!r}\n'
                     'out = b""\n'
@@ -415,10 +415,24 @@ def capture_academy_screen():
                     '        break\n'
                     'sys.stdout.buffer.write(out)\n'
                     'os.kill(pid, 9)\n')
-        raw = subprocess.run([sys.executable, script], capture_output=True).stdout.decode('utf-8', 'replace')
+        return subprocess.run([sys.executable, script], capture_output=True).stdout.decode('utf-8', 'replace')
+
+
+def capture_academy_screen():
+    """Grab the last screen of Légal's Mate in the Academy."""
+    raw = pty_screen('import academy; academy.academy()', '2\n3\n' + '\n' * 13)
     screen = raw.split('\x1b[2J\x1b[H')[-1]
     screen = screen.split('move 13/13')[0].rstrip()
     screen = re.sub(r'\n[^\n]*$', '', screen) if screen.endswith('\x1b[0m') is False else screen
+    return screen.replace('\r', '')
+
+
+def capture_winter_screen():
+    """Solve the first eight countdown puzzles and grab the screen of the ninth chime."""
+    keys = ''.join(p['solution'] + '\n\n' for p in NEW_YEAR_PUZZLES[:8])
+    raw = pty_screen('import winter; winter.countdown(2027)', keys)
+    screen = raw.split('\x1b[2J\x1b[H')[-1]
+    screen = screen.split('Type a move')[0].rstrip()
     return screen.replace('\r', '')
 
 
@@ -479,6 +493,8 @@ def main():
                  banner=('Checkmate.', 'Légal’s Mate · 7. Nd5#'), notes=True),
         make_terminal_plate(capture_academy_screen(), os.path.join(ASSETS, 'terminal-academy.png'), 5,
                             'Real output — the Academy in colour', '~/code-in-place-2025 — Chess Academy'),
+        make_terminal_plate(capture_winter_screen(), os.path.join(ASSETS, 'terminal-winter.png'), 6,
+                            "Real output — New Year's Eve mode", "~/code-in-place-2025 — New Year's Eve"),
         make_certificate_plate(),
     ]
     for path in outputs:
